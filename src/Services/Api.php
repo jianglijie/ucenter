@@ -1,6 +1,8 @@
 <?php namespace Binaryoung\Ucenter\Services;
 
 use Binaryoung\Ucenter\Services\Help;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 class Api implements \Binaryoung\Ucenter\Contracts\Api
 {
@@ -9,33 +11,33 @@ class Api implements \Binaryoung\Ucenter\Contracts\Api
     public $get = [];
 
     public $post = [];
-    
+
     public  function test()
     {
         return API_RETURN_SUCCEED;
     }
-    
+
     public  function deleteuser()
     {
         $uids = $this->get['ids'];
-       
+
         /*
         同步删除用户代码
          */
-        
+
         return API_RETURN_SUCCEED;
     }
-    
+
     public  function renameuser()
     {
         $uid = $this->get['uid'];
         $oldusername = $this->get['oldusername'];
         $newusername = $this->get['newusername'];
-        
+
         /*
         同步重命名用户代码
         */
-        
+
         return API_RETURN_SUCCEED;
     }
 
@@ -48,14 +50,14 @@ class Api implements \Binaryoung\Ucenter\Contracts\Api
         /*
         同步更新用户密码
          */
-        
+
         return API_RETURN_SUCCEED;
     }
 
     public  function gettag()
     {
         $name = $this->get['id'];
-        
+
         $return = [];
         return $this->serialize($return, 1);
     }
@@ -65,22 +67,15 @@ class Api implements \Binaryoung\Ucenter\Contracts\Api
         $uid = $this->get['uid'];
         $username = $this->get['username'];
 
-        /*
-        
-        同步登陆代码
-        
-        */
+        set_user_login_cookie($uid, $username);
+        Log::info('jieshoudao:'.$uid);
         return API_RETURN_SUCCEED;
     }
 
     public  function synlogout()
     {
-
-        /*
-        
-        同步注销代码
-        
-        */
+        set_user_logout_cookie();
+        Log::info('zhixing logout:');
         return API_RETURN_SUCCEED;
     }
 
@@ -101,7 +96,7 @@ class Api implements \Binaryoung\Ucenter\Contracts\Api
         $s .= '$_CACHE[\'badwords\'] = '.var_export($data, true).";\r\n";
         fwrite($fp, $s);
         fclose($fp);
-        
+
         return API_RETURN_SUCCEED;
     }
 
@@ -114,7 +109,7 @@ class Api implements \Binaryoung\Ucenter\Contracts\Api
         $s .= '$_CACHE[\'hosts\'] = '.var_export($this->post, true).";\r\n";
         fwrite($fp, $s);
         fclose($fp);
-        
+
         return API_RETURN_SUCCEED;
     }
 
@@ -127,7 +122,7 @@ class Api implements \Binaryoung\Ucenter\Contracts\Api
         $s .= '$_CACHE[\'apps\'] = '.var_export($this->post, true).";\r\n";
         fwrite($fp, $s);
         fclose($fp);
-        
+
         return API_RETURN_SUCCEED;
     }
 
@@ -140,10 +135,10 @@ class Api implements \Binaryoung\Ucenter\Contracts\Api
         $s .= '$_CACHE[\'settings\'] = '.var_export($this->post, true).";\r\n";
         @fwrite($fp, $s);
         @fclose($fp);
-        
+
         return API_RETURN_SUCCEED;
     }
-    
+
     /*public  function updatesmsapi()
     {
 
@@ -156,14 +151,14 @@ class Api implements \Binaryoung\Ucenter\Contracts\Api
         
         return API_RETURN_SUCCEED;
     }*/
-   
+
     public  function updatecredit()
     {
 
         $credit = $this->get['credit'];
         $amount = $this->get['amount'];
         $uid = $this->get['uid'];
-        
+
         return API_RETURN_SUCCEED;
     }
 
@@ -194,7 +189,7 @@ class Api implements \Binaryoung\Ucenter\Contracts\Api
         if (method_exists($this, $function)) {
             return call_user_func_array([$this, $function], $arguments);
         } else {
-            throw new Exception("function not exists");           
+            throw new Exception("function not exists");
         }
     }
 }
